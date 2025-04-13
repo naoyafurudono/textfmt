@@ -13,11 +13,7 @@ import (
 
 func TestUpdate(t *testing.T) {
 	// テスト用ディレクトリを作成
-	testDir, err := os.MkdirTemp("", "file-test-")
-	if err != nil {
-		t.Fatalf("テスト用ディレクトリを作成できません: %v", err)
-	}
-	defer os.RemoveAll(testDir)
+	testDir := t.TempDir()
 
 	t.Run("正常に更新できる場合", func(t *testing.T) {
 		// テストファイルを作成
