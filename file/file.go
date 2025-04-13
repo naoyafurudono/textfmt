@@ -9,7 +9,7 @@ import (
 // pathで指定するファイルをfで更新する.
 // fはfromの内容を持つファイルを更新してtoに書き込む関数であることを期待する.
 // fがエラーを返した場合にはUpdateもエラーを返し、元のファイルには何もしない.
-func Update(f func(from io.Reader, to io.Writer) error, path string) error {
+func Update(path string, f func(from io.Reader, to io.Writer) error) error {
 	file, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("ファイルを開けません: %v", err)

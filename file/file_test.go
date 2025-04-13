@@ -37,7 +37,7 @@ func TestUpdate(t *testing.T) {
 		}
 
 		// ファイルを更新
-		if err := file.Update(uppercase, testPath); err != nil {
+		if err := file.Update(testPath, uppercase); err != nil {
 			t.Fatalf("Update関数が失敗しました: %v", err)
 		}
 
@@ -65,7 +65,7 @@ func TestUpdate(t *testing.T) {
 		}
 
 		// ファイルを更新（エラーが発生するはず）
-		err := file.Update(errFunc, testPath)
+		err := file.Update(testPath, errFunc)
 		if err == nil {
 			t.Fatalf("エラーが期待されましたが、発生しませんでした")
 		}
@@ -89,7 +89,7 @@ func TestUpdate(t *testing.T) {
 		}
 
 		// 存在しないファイルを更新しようとする
-		err := file.Update(nopFunc, nonExistentPath)
+		err := file.Update(nonExistentPath, nopFunc)
 		if err == nil {
 			t.Fatalf("存在しないファイルに対してエラーが期待されましたが、発生しませんでした")
 		}
@@ -117,7 +117,7 @@ func TestUpdate(t *testing.T) {
 		}
 
 		// ファイルを更新
-		if err := file.Update(updateFunc, testPath); err != nil {
+		if err := file.Update(testPath, updateFunc); err != nil {
 			t.Fatalf("Update関数が失敗しました: %v", err)
 		}
 

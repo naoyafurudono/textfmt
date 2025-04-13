@@ -45,7 +45,7 @@ func formatText(r io.Reader, w io.Writer) error {
 
 // pathのファイルを整形する
 func formatFile(path string) error {
-	return file.Update(formatText, path)
+	return file.Update(path, formatText)
 }
 
 func main() {
