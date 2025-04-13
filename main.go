@@ -7,6 +7,8 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"github.com/naoyafurudono/textfmt/file"
 )
 
 // rの内容を整形してwに書き込む
@@ -43,53 +45,7 @@ func formatText(r io.Reader, w io.Writer) error {
 
 // pathのファイルを整形する
 func formatFile(path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return fmt.Errorf("ファイルを開けません: %v", err)
-	}
-	defer file.Close()
-
-	fileInfo, err := file.Stat()
-	if err != nil {
-		return fmt.Errorf("ファイルのメタデータを取得できません: %v", err)
-	}
-
-	// 整形後の結果を一時ファイルに書き込む
-	tmpFile, err := os.CreateTemp("", "textfmt-")
-	if err != nil {
-		return fmt.Errorf("一時ファイルを作成できません: %v", err)
-	}
-	tmpPath := tmpFile.Name()
-	defer os.Remove(tmpPath)
-	defer tmpFile.Close()
-
-	if err := formatText(file, tmpFile); err != nil {
-		return err
-	}
-
-	// 一時ファイルを閉じる
-	if err := tmpFile.Close(); err != nil {
-		return fmt.Errorf("一時ファイルを閉じられません: %v", err)
-	}
-
-	// 一時ファイルに出力した整形結果を元のファイルにうつす
-	originalFile, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC, fileInfo.Mode())
-	if err != nil {
-		return fmt.Errorf("ファイルを開けません: %v", err)
-	}
-	defer originalFile.Close()
-
-	tmpFile, err = os.Open(tmpPath)
-	if err != nil {
-		return fmt.Errorf("一時ファイルを開けません: %v", err)
-	}
-	defer tmpFile.Close()
-	
-	if _, err := io.Copy(originalFile, tmpFile); err != nil {
-		return fmt.Errorf("ファイルをコピーできません: %v", err)
-	}
-
-	return nil
+	return file.Update(formatText, path)
 }
 
 func main() {
