@@ -41,6 +41,7 @@ textfmt file1.txt file2.txt file3.txt
 ### 標準入力からの処理
 
 入力:
+
 ```
 これはテストです。
 
@@ -49,11 +50,13 @@ textfmt file1.txt file2.txt file3.txt
 ```
 
 コマンド:
+
 ```bash
 echo -e "これはテストです。\n\n\n" | textfmt
 ```
 
 出力:
+
 ```
 これはテストです。
 ```
@@ -61,6 +64,7 @@ echo -e "これはテストです。\n\n\n" | textfmt
 ### ファイルの直接処理
 
 ファイルの内容:
+
 ```
 これはテストです。
 
@@ -69,11 +73,13 @@ echo -e "これはテストです。\n\n\n" | textfmt
 ```
 
 コマンド:
+
 ```bash
 textfmt test.txt
 ```
 
 処理後のファイルの内容:
+
 ```
 これはテストです。
 ```

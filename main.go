@@ -46,14 +46,18 @@ func formatFile(path string) error {
 	}
 	defer file.Close()
 
+	// ファイルのメタデータを取得
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return fmt.Errorf("ファイルのメタデータを取得できません: %v", err)
+	}
+
 	// 一時ファイルを作成
 	tmpFile, err := os.CreateTemp("", "textfmt-")
 	if err != nil {
 		return fmt.Errorf("一時ファイルを作成できません: %v", err)
 	}
 	tmpPath := tmpFile.Name()
-
-	// 関数が正常に実行できた場合はエラーを返すが問題ない
 	defer os.Remove(tmpPath)
 	defer tmpFile.Close()
 
@@ -67,9 +71,23 @@ func formatFile(path string) error {
 		return fmt.Errorf("一時ファイルを閉じられません: %v", err)
 	}
 
-	// 元のファイルを一時ファイルで置き換え
-	if err := os.Rename(tmpPath, path); err != nil {
-		return fmt.Errorf("ファイルを置き換えられません: %v", err)
+	// 元のファイルを開く（書き込みモード）
+	originalFile, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC, fileInfo.Mode())
+	if err != nil {
+		return fmt.Errorf("ファイルを開けません: %v", err)
+	}
+	defer originalFile.Close()
+
+	// 一時ファイルを開く
+	tmpFile, err = os.Open(tmpPath)
+	if err != nil {
+		return fmt.Errorf("一時ファイルを開けません: %v", err)
+	}
+	defer tmpFile.Close()
+
+	// 一時ファイルの内容を元のファイルにコピー
+	if _, err := io.Copy(originalFile, tmpFile); err != nil {
+		return fmt.Errorf("ファイルをコピーできません: %v", err)
 	}
 
 	return nil

@@ -61,16 +61,25 @@ func TestFormatFile(t *testing.T) {
 		name     string
 		content  string
 		expected string
+		mode     os.FileMode
 	}{
 		{
 			name:     "通常のテキスト",
 			content:  "これはテストです。",
 			expected: "これはテストです。\n",
+			mode:     0644,
 		},
 		{
 			name:     "末尾に空行がある場合",
 			content:  "これはテストです。\n\n\n",
 			expected: "これはテストです。\n",
+			mode:     0644,
+		},
+		{
+			name:     "実行可能ファイル",
+			content:  "#!/bin/sh\necho test",
+			expected: "#!/bin/sh\necho test\n",
+			mode:     0755,
 		},
 	}
 
@@ -81,7 +90,7 @@ func TestFormatFile(t *testing.T) {
 
 			// テスト用のファイルを作成
 			path := filepath.Join(tmpDir, "test.txt")
-			if err := os.WriteFile(path, []byte(tt.content), 0644); err != nil {
+			if err := os.WriteFile(path, []byte(tt.content), tt.mode); err != nil {
 				t.Fatalf("テストファイルを作成できません: %v", err)
 			}
 
@@ -100,6 +109,17 @@ func TestFormatFile(t *testing.T) {
 
 			if got := string(content); got != tt.expected {
 				t.Errorf("formatFile() = %q, want %q", got, tt.expected)
+			}
+
+			// ファイルのモードを確認
+			fileInfo, err := os.Stat(path)
+			if err != nil {
+				t.Errorf("ファイルのメタデータを取得できません: %v", err)
+				return
+			}
+
+			if got := fileInfo.Mode(); got != tt.mode {
+				t.Errorf("formatFile() mode = %v, want %v", got, tt.mode)
 			}
 		})
 	}
