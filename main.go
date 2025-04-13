@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
+// rの内容を整形してwに書き込む
 func formatText(r io.Reader, w io.Writer) error {
-	// 標準入力からテキストを読み込む
 	scanner := bufio.NewScanner(r)
 	var lines []string
 	for scanner.Scan() {
@@ -41,21 +41,20 @@ func formatText(r io.Reader, w io.Writer) error {
 	return nil
 }
 
+// pathのファイルを整形する
 func formatFile(path string) error {
-	// ファイルを開く
 	file, err := os.Open(path)
 	if err != nil {
 		return fmt.Errorf("ファイルを開けません: %v", err)
 	}
 	defer file.Close()
 
-	// ファイルのメタデータを取得
 	fileInfo, err := file.Stat()
 	if err != nil {
 		return fmt.Errorf("ファイルのメタデータを取得できません: %v", err)
 	}
 
-	// 一時ファイルを作成
+	// 整形後の結果を一時ファイルに書き込む
 	tmpFile, err := os.CreateTemp("", "textfmt-")
 	if err != nil {
 		return fmt.Errorf("一時ファイルを作成できません: %v", err)
@@ -64,7 +63,6 @@ func formatFile(path string) error {
 	defer os.Remove(tmpPath)
 	defer tmpFile.Close()
 
-	// ファイルをフォーマット
 	if err := formatText(file, tmpFile); err != nil {
 		return err
 	}
@@ -74,21 +72,19 @@ func formatFile(path string) error {
 		return fmt.Errorf("一時ファイルを閉じられません: %v", err)
 	}
 
-	// 元のファイルを開く（書き込みモード）
+	// 一時ファイルに出力した整形結果を元のファイルにうつす
 	originalFile, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC, fileInfo.Mode())
 	if err != nil {
 		return fmt.Errorf("ファイルを開けません: %v", err)
 	}
 	defer originalFile.Close()
 
-	// 一時ファイルを開く
 	tmpFile, err = os.Open(tmpPath)
 	if err != nil {
 		return fmt.Errorf("一時ファイルを開けません: %v", err)
 	}
 	defer tmpFile.Close()
-
-	// 一時ファイルの内容を元のファイルにコピー
+	
 	if _, err := io.Copy(originalFile, tmpFile); err != nil {
 		return fmt.Errorf("ファイルをコピーできません: %v", err)
 	}
