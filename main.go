@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 func formatText(r io.Reader, w io.Writer) error {
@@ -13,7 +14,9 @@ func formatText(r io.Reader, w io.Writer) error {
 	scanner := bufio.NewScanner(r)
 	var lines []string
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		// 行末尾の空白を削除（半角スペース、タブ、全角スペース）
+		line := strings.TrimRight(scanner.Text(), " \t　")
+		lines = append(lines, line)
 	}
 
 	if err := scanner.Err(); err != nil {

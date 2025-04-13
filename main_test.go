@@ -39,6 +39,26 @@ func TestFormatText(t *testing.T) {
 			input:    "\n\n\n",
 			expected: "",
 		},
+		{
+			name:     "行末尾に空白がある場合",
+			input:    "行1  \n行2\t\n行3   \t\n",
+			expected: "行1\n行2\n行3\n",
+		},
+		{
+			name:     "複数行の末尾に空白がある場合",
+			input:    "これはテストです。  \nこれはテストです。\t\nこれはテストです。   \t\n",
+			expected: "これはテストです。\nこれはテストです。\nこれはテストです。\n",
+		},
+		{
+			name:     "行末尾に全角スペースがある場合",
+			input:    "行1　\n行2　　\n行3　　\n",
+			expected: "行1\n行2\n行3\n",
+		},
+		{
+			name:     "複数行の末尾に全角スペースがある場合",
+			input:    "これはテストです。　\nこれはテストです。　　\nこれはテストです。　　\n",
+			expected: "これはテストです。\nこれはテストです。\nこれはテストです。\n",
+		},
 	}
 
 	for _, tt := range tests {
